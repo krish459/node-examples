@@ -9,7 +9,7 @@ connect.then((db)=>{
    console.log('Connected correctly to the server');
    
    Dishes.create({
-       name: 'Pizza',
+       name: 'Pizza_four',
        description: 'round bread'
    })
 
@@ -17,10 +17,28 @@ connect.then((db)=>{
    .then((dish) => {
        console.log(dish);
 
-       return Dishes.find({}).exec();
+       return Dishes.findByIdAndUpdate(dish._id,{
+           $set : {description: 'Updated test'}
+        },{
+            new: true 
+
+       }).exec();
    })
    .then((dishes)=>{
        console.log(dishes);
+
+       dishes.comments.push({
+
+        rating: 4,
+        comment: 'Amazing',
+        author: 'Prachi shah'
+       });
+
+       return dishes.save();
+
+    })
+    .then((dish)=>{
+        console.log(dish);
 
        return Dishes.remove({});
    })
