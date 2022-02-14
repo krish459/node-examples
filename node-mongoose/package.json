@@ -1,12 +1,15 @@
 {
-  "name": "node-mongo",
+  "name": "node-mongoose",
   "version": "1.0.0",
-  "description": "Node mongodb example",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index"
   },
-  "author": "Krish Shah",
-  "license": "ISC"
+  "author": "Krish shah",
+  "license": "ISC",
+  "dependencies": {
+    "mongoose": "^5.1.7"
+  }
 }
