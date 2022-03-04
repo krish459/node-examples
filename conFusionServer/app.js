@@ -4,7 +4,9 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session = require('express-session');
-var FileStore  = require('session-file-store')(session);
+var FileStore = require('session-file-store')(session);
+var passport = require('passport');
+var authenticate = require('./authenticate');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -18,9 +20,9 @@ const Dishes = require('./models/dishes');
 
 const url = 'mongodb://localhost:27017/conFusion';
 const connect = mongoose.connect(url);
-connect.then((db)=>{
+connect.then((db) => {
   console.log('Connect correctly to the server');
-}),(err)=>{console.log(err);};
+}), (err) => { console.log(err); };
 
 var app = express();
 
@@ -40,28 +42,24 @@ app.use(session({
   resave: false,
   store: new FileStore()
 }));
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-function auth(req,res,next){
-  console.log(req.session);
+function auth(req, res, next) {
 
-  if (!req.session.user) {
-    var err = new Error('You are not authenticated');
-    err.status = 401;
-    return next(err);
-  }
-  else{
-   if (req.session.user === 'authenticated') {
-    next();
-    
-   }
-   else{
+  if (!req.user) {
     var err = new Error('You are not authenticated');
     err.status = 403;
     return next(err);
-   }
+  }
+  else {
+
+    next();
+
   }
 }
 
@@ -69,17 +67,17 @@ app.use(auth);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/dishes',dishRouter);
-app.use('/leaders',leaderRouter);
-app.use('/promotions',promotionsRouter);
+app.use('/dishes', dishRouter);
+app.use('/leaders', leaderRouter);
+app.use('/promotions', promotionsRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
